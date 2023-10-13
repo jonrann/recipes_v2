@@ -38,10 +38,11 @@ class Recipe:
         return connectToMySQL('recipes_v2_schema').query_db(query, data)
 
 # Read
-    # @classmethod
-    # def get_all(cls, data):
+    @classmethod
+    def get_all(cls):
         # Write query to get all recipes
-
+        query = "SELECT * FROM recipes;"
+        results = connectToMySQL('recipes_v2_schema').query_db(query)
         # Create empty list to hold recipe objects
 
         # Check to see if any exist
