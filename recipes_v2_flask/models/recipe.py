@@ -44,10 +44,14 @@ class Recipe:
         query = "SELECT * FROM recipes;"
         results = connectToMySQL('recipes_v2_schema').query_db(query)
         # Create empty list to hold recipe objects
-
-        # Check to see if any exist
-
+        recipes = []
+        if results:         # Check to see if any exist
         # Loop through results and intialize each as an object
+            for row in results:
+                recipes.append(cls(row))
+            return recipes
+        else:
+            return None
 
         # Return list
 
