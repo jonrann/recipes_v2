@@ -53,12 +53,51 @@ class Recipe:
         else:
             return None
 
-        # Return list
+    # Read one by id
+    # Method to fetch data of one recipe by ID
+    @classmethod
+    def get_by_id(cls, recipe_id):
+        # query for fetching data
+        query = "SELECT * FROM recipes WHERE id = %(id)s;"
+        data = {
+            'id' : recipe_id
+        }
+        result = connectToMySQL('recipes_v2_schema').query_db(query, data)
+        # Create object from result (should only be one fetched from query)
+        if result:
+            return cls(result[0])
+        else:
+            return None
+            # Return object
 
 
 # Update
-
-
+    # Update classmethod for updating a recipe
+    @classmethod
+    def update_recipe(cls, data):
+        # query to update query
+        query = """
+            UPDATE recipes
+            SET name = %(name)s,
+                description = %(description)s,
+                instructions = %(instructions)s,
+                under = %(under)s,
+                updated_at = NOW()
+            WHERE id = %(id)s;
+        """
+        # return executing query
+        return connectToMySQL('recipes_v2_schema').query_db(query, data)
 
 # Delete
+    # method for deleting a recipe
+    @classmethod
+    def delete_recipe(recipe_id):
+        #  query to delete
+        query = "DELETE FROM recipes WHERE id = %(id)s;"
+        data = {
+            'id' : recipe_id
+        }
+        # return execution
+        return connectToMySQL('recipes_v2_schema').query_db(query, data)
+
 

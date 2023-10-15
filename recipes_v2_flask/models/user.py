@@ -1,6 +1,10 @@
 from recipes_v2_flask.config.mysqlconnection import connectToMySQL
+from recipes_v2_flask.models import recipe as recipe_module
+from flask import request
+import re
 
 # create email regular expression
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 # create User class
 class User:
@@ -78,22 +82,74 @@ class User:
         # Return user data
 
     # Get recipes FROM users
+    @classmethod
+    def get_recipes_with_users(cls):
+        query = """
+            SELECT recipes.*, users.id AS user_id, users.first_name, users.last_name, users.email
+            FROM recipes
+            JOIN users ON recipes.user_id = users.id
+            ORDER BY recipes.updated DESC;
+        """
+        results = connectToMySQL('recipes_v2_schema').query_db(query)
+        recipes_with_users_list = []
+        if results:
+            users = {}
+            for row in results:
+                # Create or reuse a user object
+                user_id = row['user_id']
+                if user_id not in users:
+                    user_data = {
+                        'id': user_id,
+                        'first_name': row['first_name'],
+                        'last_name': row['last_name'],
+                        'email': row['email'],
+                    }
+                    users[user_id] = cls(user_data)
 
-        # Fetch data of recipes from one user using a JOIN query
+                # Create recipe object
+                recipe_data = {
+                    'id': row['id'],
+                    'name': row['name'],
+                    'description': row['description'],
+                    'instructions': row['instructions'],
+                    'under': row['under'],
+                    'created_at': row['created_at'],
+                    'updated_at': row['updated_at']
+                }
+                recipe = recipe_module.Recipe(recipe_data)
+                recipe.creator = users[user_id]
+                recipes_with_users_list.append(recipe)
+            return recipes_with_users_list
+        else:
+            return None
 
-        # Create user object
-
-        # Create recipe object
-
-        # Associate the objects with one another using user.recipes attribute and recipe.creator attribute
 
     # Validator for Registration form
+    @staticmethod
+    def validate_user(data):
+        is_valid = True
+
         # Validate first name
+        if len(data['first_name']) < 3:
+            is_valid = False
 
         # Validate last name
+        if len(data['last_name']) < 3:
+            is_valid = False
 
         # Validate email
+        if not EMAIL_REGEX.match(data['email']):
+            is_valid = False
 
         # Validate password
+        if len(data['password']) < 5:
+            is_valid = False
+        if not re.search("[A-Z]", data['password']):
+            is_valid = False
+        if not re.search("[0-9]", data['password']):
+            is_valid = False
 
         # Validate confirme password
+        if data['password'] != data['confirm_password']:
+            is_valid = False
+        return is_valid
