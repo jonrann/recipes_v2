@@ -3,6 +3,7 @@ from recipes_v2_flask.config.mysqlconnection import connectToMySQL
 # create Recipe class
 class Recipe:
     def __init__(self, data) -> None:
+        self.id = data['id']
         self.name = data['name']
         self.description = data['description']
         self.instructions = data['instructions']

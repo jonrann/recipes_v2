@@ -1,6 +1,6 @@
 from recipes_v2_flask.config.mysqlconnection import connectToMySQL
 from recipes_v2_flask.models import recipe as recipe_module
-from flask import request
+from flask import request, flash
 import re
 
 # create email regular expression
@@ -9,6 +9,7 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 # create User class
 class User:
     def __init__(self, data) -> None:
+        self.id = data['id']
         self.first_name = data['first_name']
         self.last_name = data['last_name']
         self.email = data['email']
@@ -131,25 +132,32 @@ class User:
 
         # Validate first name
         if len(data['first_name']) < 3:
+            flash('First name needs to be at least 3 characters', 'danger')
             is_valid = False
 
         # Validate last name
         if len(data['last_name']) < 3:
+            flash('Last name needs to be at least 3 characters', 'danger')
             is_valid = False
 
         # Validate email
         if not EMAIL_REGEX.match(data['email']):
+            flash('Invalid email', 'danger')
             is_valid = False
 
         # Validate password
         if len(data['password']) < 5:
+            flash('Password needs to be at least 3 characters', 'danger')
             is_valid = False
         if not re.search("[A-Z]", data['password']):
+            flash('Password needs at least 1 capital letter', 'danger')
             is_valid = False
         if not re.search("[0-9]", data['password']):
+            flash('Password needs at least 1 number', 'danger')
             is_valid = False
 
         # Validate confirme password
         if data['password'] != data['confirm_password']:
+            flash('Passwords do not match', 'danger')
             is_valid = False
         return is_valid
