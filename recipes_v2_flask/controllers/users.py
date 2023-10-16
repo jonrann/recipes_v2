@@ -16,7 +16,7 @@ def register_login():
 @app.route('/register', methods=['POST'])
 def register():
     # Retrieve data from register form
-    user_data = request.form
+    user_data = dict(request.form)
 
     # Validate data from form
     if not user_module.User.validate_user(user_data):
@@ -28,7 +28,7 @@ def register():
 
     # Save data into the database using classmethod from user.py
     if user_module.User.create(user_data):
-        return redirect(url_for('dashboard')) 
+        return redirect(url_for('dashboard')) #Create dashboard
 
 
 # Route for logging in - POST

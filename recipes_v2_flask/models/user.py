@@ -29,7 +29,7 @@ class User:
                 email,
                 password,
                 created_at,
-                updated_at,
+                updated_at
             )
             VALUES (
                 %(first_name)s,
