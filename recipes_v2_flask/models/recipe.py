@@ -10,6 +10,7 @@ class Recipe:
         self.under = data['under']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
+        self.user_id = data['user_id']
         self.creator = None
 
 # CRUD Functions
@@ -19,6 +20,7 @@ class Recipe:
         # Query to put data in db
         query = """
             INSERT INTO recipes (
+                user_id,
                 name,
                 description,
                 instructions,
@@ -27,12 +29,13 @@ class Recipe:
                 updated_at
             )
             VALUES (
+                %(user_id)s,
                 %(name)s,
                 %(description)s,
                 %(instructions)s,
                 %(under)s,
                 NOW(),
-                NOW(),
+                NOW()
             );
         """
         # return execution of query

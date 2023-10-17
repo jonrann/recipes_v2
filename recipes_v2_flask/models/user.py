@@ -119,6 +119,7 @@ class User:
                 # Create recipe object
                 recipe_data = {
                     'id': row['id'],
+                    'user_id': row['user_id'],
                     'name': row['name'],
                     'description': row['description'],
                     'instructions': row['instructions'],

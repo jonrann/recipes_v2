@@ -15,7 +15,9 @@
             <div class="col-md-4 text-right">
                 <div class="row">
                     <div class="col-4">
-                        <button type="submit" class="btn btn-primary">+ Create</button>
+                        <form action="/recipes/new">
+                            <button type="submit" class="btn btn-primary">+ Create</button>
+                        </form>
                     </div>
                     <div class="col-4">
                         <form action="/logout" method="POST">
@@ -31,7 +33,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Under</th>
+                            <th>Under 30 Mins</th>
                             <th>Posted By</th>
                             <th>Actions</th>
                         </tr>
@@ -40,7 +42,7 @@
                         {% for recipe in recipes %}
                             <tr>
                                 <td>{{ recipe.name }}</td>
-                                <td>{{ recipe.under }}</td>
+                                <td>{{ 'Yes' if recipe.under == 1 else 'No' }}</td>
                                 <td>{{ recipe.creator.first_name }}</td>
                                 <td>
                                     <a href="#" class="btn btn-sm btn-info">view recipe</a>

@@ -44,7 +44,7 @@ def login():
         if check_password_hash(user.password, password):
         # If password matches, create a session with the user's id
             session['user_id'] = user.id
-            return redirect(url_for('dashboard', user=user))
+            return redirect(url_for('dashboard'))
         else:
             flash('Incorrect password', 'danger')
             return redirect(url_for('register_login'))
