@@ -34,21 +34,37 @@ def register():
 # Route for logging in - POST
 @app.route('/login', methods=['POST'])
 def login():
+    email = request.form['email']
+    password = request.form['password']
     # Check if user exists by fetching email and retrive all data
-    user = user_module.User.get_by_email(request.form['email'])
+    user = user_module.User.get_by_email(email)
     # If email exists, check if password matches hashed password using check pw hash
+    print(user)
     if user:
-        if check_password_hash(user.password, request.form['password']):
+        if check_password_hash(user.password, password):
         # If password matches, create a session with the user's id
             session['user_id'] = user.id
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard', user=user))
         else:
             flash('Incorrect password', 'danger')
-            redirect(url_for('register_login'))
-
+            return redirect(url_for('register_login'))
+    else:
+        flash('Email not found','danger')
+        return redirect(url_for('register_login'))
 
 # Redirect to dashboard
+@app.route('/recipes')
+def dashboard():
+    if 'user_id' in session:
+        user_id = session['user_id']
+    current_user = user_module.User.get_by_id(user_id)
+    users = user_module.User.get_all()
+    recipes = user_module.User.get_recipes_with_users()
+    return render_template('dashboard.html', users=users, recipes=recipes, current_user=current_user)
 
 
 # Route for logging out - POST
-# @app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('register_login'))

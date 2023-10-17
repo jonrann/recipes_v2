@@ -57,9 +57,12 @@ class User:
 
     # Read one
     @classmethod
-    def get_by_id(cls, data):
+    def get_by_id(cls, user_id):
         # Write the query to get one single user by its id
         query = "SELECT * FROM users WHERE id = %(id)s;"
+        data = {
+            'id' : user_id
+        }
         # Run the query in MySQL to get back a result
         result = connectToMySQL('recipes_v2_schema').query_db(query, data)
         # Intialize the first result I get (which should only be one result) into an object using __init__ function.
@@ -70,9 +73,12 @@ class User:
         # Return the object
 
     @classmethod
-    def get_by_email(cls, data):
+    def get_by_email(cls, email):
         # Write query that gets user by email (one email should belong to one id)
         query = "SELECT * FROM users WHERE email = %(email)s;"
+        data = {
+            'email' : email
+        }
         # Run query and get result from db
         result = connectToMySQL('recipes_v2_schema').query_db(query, data)
         # Intialize first result (only one)
@@ -86,10 +92,10 @@ class User:
     @classmethod
     def get_recipes_with_users(cls):
         query = """
-            SELECT recipes.*, users.id AS user_id, users.first_name, users.last_name, users.email
+            SELECT recipes.*, users.id AS user_id, users.first_name, users.last_name, users.email, users.password, users.created_at, users.updated_at
             FROM recipes
             JOIN users ON recipes.user_id = users.id
-            ORDER BY recipes.updated DESC;
+            ORDER BY recipes.updated_at DESC;
         """
         results = connectToMySQL('recipes_v2_schema').query_db(query)
         recipes_with_users_list = []
@@ -104,6 +110,9 @@ class User:
                         'first_name': row['first_name'],
                         'last_name': row['last_name'],
                         'email': row['email'],
+                        'password': row['password'],
+                        'created_at': row['created_at'],
+                        'updated_at': row['updated_at']
                     }
                     users[user_id] = cls(user_data)
 
