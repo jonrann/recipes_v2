@@ -57,6 +57,8 @@ def login():
 def dashboard():
     if 'user_id' in session:
         user_id = session['user_id']
+    else:
+        return redirect(url_for('register_login'))
     current_user = user_module.User.get_by_id(user_id)
     users = user_module.User.get_all()
     recipes = user_module.User.get_recipes_with_users()

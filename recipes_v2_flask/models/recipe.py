@@ -1,5 +1,5 @@
 from recipes_v2_flask.config.mysqlconnection import connectToMySQL
-
+from recipes_v2_flask.models import user as user_module
 # create Recipe class
 class Recipe:
     def __init__(self, data) -> None:
@@ -69,7 +69,11 @@ class Recipe:
         result = connectToMySQL('recipes_v2_schema').query_db(query, data)
         # Create object from result (should only be one fetched from query)
         if result:
-            return cls(result[0])
+            recipe = cls(result[0])
+            user_data = result[0]['user_id']
+            user = user_module.User.get_by_id(user_data)
+            recipe.creator = user
+            return recipe
         else:
             return None
             # Return object
@@ -95,7 +99,7 @@ class Recipe:
 # Delete
     # method for deleting a recipe
     @classmethod
-    def delete_recipe(recipe_id):
+    def delete_recipe(cls, recipe_id):
         #  query to delete
         query = "DELETE FROM recipes WHERE id = %(id)s;"
         data = {
