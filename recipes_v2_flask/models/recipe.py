@@ -1,14 +1,16 @@
 from recipes_v2_flask.config.mysqlconnection import connectToMySQL
-
+from recipes_v2_flask.models import user as user_module
 # create Recipe class
 class Recipe:
     def __init__(self, data) -> None:
+        self.id = data['id']
         self.name = data['name']
         self.description = data['description']
         self.instructions = data['instructions']
         self.under = data['under']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
+        self.user_id = data['user_id']
         self.creator = None
 
 # CRUD Functions
@@ -18,6 +20,7 @@ class Recipe:
         # Query to put data in db
         query = """
             INSERT INTO recipes (
+                user_id,
                 name,
                 description,
                 instructions,
@@ -26,12 +29,13 @@ class Recipe:
                 updated_at
             )
             VALUES (
+                %(user_id)s,
                 %(name)s,
                 %(description)s,
                 %(instructions)s,
                 %(under)s,
                 NOW(),
-                NOW(),
+                NOW()
             );
         """
         # return execution of query
@@ -65,7 +69,11 @@ class Recipe:
         result = connectToMySQL('recipes_v2_schema').query_db(query, data)
         # Create object from result (should only be one fetched from query)
         if result:
-            return cls(result[0])
+            recipe = cls(result[0])
+            user_data = result[0]['user_id']
+            user = user_module.User.get_by_id(user_data)
+            recipe.creator = user
+            return recipe
         else:
             return None
             # Return object
@@ -91,7 +99,7 @@ class Recipe:
 # Delete
     # method for deleting a recipe
     @classmethod
-    def delete_recipe(recipe_id):
+    def delete_recipe(cls, recipe_id):
         #  query to delete
         query = "DELETE FROM recipes WHERE id = %(id)s;"
         data = {
