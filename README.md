@@ -1,3 +1,3 @@
 # recipes_v2
 
-This is a project assignment that is being created for the second time but practicing the use of GitHub and Git to update changes through commits and pushes.
+This is a basic CRUD app that uses Flask as the web framework to create personal Recipes.
